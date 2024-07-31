@@ -1,28 +1,51 @@
 import styled from "styled-components";
-import rain from "assets/icons/rain.svg";
 import HorizontalDivider from "components/Divider/Horizontal.tsx";
+import {Hour} from "services/types/ForecastType.ts";
+import {useEffect, useMemo, useState} from "react";
+import {weatherIcon} from "utils/weatherIcon.ts";
 
-export default function VerticalForecast() {
+export default function VerticalForecast({temp_c, time, condition}: Hour) {
+    const [isCurrentTime, setIsCurrentTime] = useState(false)
+
+    useEffect(() => {
+        if (time) {
+            let existingTime = time.split(" ")[1]
+            existingTime = existingTime.split(":")[0]
+
+            let currentHours = new Date().getHours()
+            currentHours = Number(currentHours.toString().padStart(2, ""))
+
+            setIsCurrentTime(currentHours === Number(existingTime))
+        }
+    }, [time])
+
+    const formatTime = useMemo(() => {
+        if (time) {
+            return time.split(" ")[1]
+        }
+        return ""
+    }, [time])
+
     return (
-        <Container>
-            <span>09:00</span>
+        <Container iscurrenttime={isCurrentTime ? 'rgba(177,177,177,0.6)' : 'rgba(99,99,99,0.3)'}>
+            <span>{formatTime}</span>
             <HorizontalDivider/>
             <SVGContainer>
-                <img src={rain} alt={"rainy"} width={24} height={24}/>
+                <img src={weatherIcon[condition.code]} alt={"rainy"} width={24} height={24}/>
             </SVGContainer>
-            <Temperature>10&deg;C</Temperature>
+            <Temperature>{Math.round(temp_c)}&deg;C</Temperature>
         </Container>
     )
 }
 
-const Container = styled.div`
+const Container = styled.div<{ iscurrenttime: string }>`
     display: flex;
     flex-direction: column;
     padding: 10px;
     justify-content: center;
     align-items: center;
     width: 50px;
-    background-color: rgba(158, 158, 158, 0.3);
+    background-color: ${props => props.iscurrenttime};
     border-radius: 8px;
     gap: 5px;
 

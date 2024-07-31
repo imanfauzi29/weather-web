@@ -1,31 +1,41 @@
 import styled from "styled-components";
 import BackgroundVideo from "components/BackgroundVideo";
 import WeatherLocation from "components/WeatherLocation";
-import VerticalDivider from "components/Divider/Vertical.tsx";
-import HorizontalDivider from "components/Divider/Horizontal.tsx";
-import VerticalForecast from "components/Forecast/Vertical.tsx";
+import WeatherInfo from "components/WeatherInfo";
+import {useEffect} from "react";
+import {getForecastWeather} from "services/weather.ts";
+import {useCurrentWeatherStore} from "store/useCurrentWeatherStore.ts";
+import {videoBg} from "utils/video.ts";
 
 
 function App() {
+    const {q, current, setWeather, setForecast} = useCurrentWeatherStore(state => state)
+
+    useEffect(() => {
+        getForecastWeatherService()
+    }, [q])
+
+    const getForecastWeatherService = async () => {
+        try {
+            const {current, forecast, location} = await getForecastWeather({q, days: 1})
+
+            setWeather(current, location)
+            setForecast(forecast.forecastday)
+        } catch (err) {
+            console.log("Failed to get current weather:")
+            console.error("Error: %s", err)
+        }
+    }
+
+    console.log(videoBg[current?.condition.code as number])
     return (
         <>
             <Container>
-                <BackgroundVideo src={"/src/assets/rain.mp4"}/>
+                {current?.condition && (
+                    <BackgroundVideo src={videoBg[current.condition.code as number]}/>
+                )}
                 <WeatherContainer>
-                    <WeatherInfo>
-                        <WeatherDateTime>
-                            <p>Friday, 23 april</p>
-                            <VerticalDivider height={"10px"}/>
-                            <p>11:00</p>
-                        </WeatherDateTime>
-                        <CurrentWeatherContainer>
-                            <h1>Heavy Rain</h1>
-                            <HorizontalDivider/>
-                            <div>
-                                <VerticalForecast/>
-                            </div>
-                        </CurrentWeatherContainer>
-                    </WeatherInfo>
+                    <WeatherInfo/>
                     <WeatherLocation/>
                 </WeatherContainer>
             </Container>
@@ -45,34 +55,4 @@ const WeatherContainer = styled.div`
     z-index: 1;
 `
 
-const WeatherInfo = styled.div`
-    width: 100%;
-    padding: 42px;
-    display: flex;
-    justify-content: space-between;
-    flex-direction: column;
-`
-
-const WeatherDateTime = styled.div`
-    display: flex;
-    justify-content: end;
-    align-items: center;
-    color: white;
-`
-
-const CurrentWeatherContainer = styled.div`
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-
-    & > h1 {
-        text-align: end;
-        font-size: 100px;
-        color: white;
-        font-weight: 500;
-        background: -webkit-linear-gradient(#eee, #606060);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
-`
 export default App

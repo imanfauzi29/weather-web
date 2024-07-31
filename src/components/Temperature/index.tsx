@@ -1,10 +1,14 @@
-import {TemperatureContainer, TemperatureText, WindSpeedText} from "components/Temperature/style.ts";
+import {useCurrentWeatherStore} from "store/useCurrentWeatherStore.ts";
+import {WindCompass, WindCompassType} from "utils/compass.ts";
+import styled from "styled-components";
 
 export default function Temperature() {
+    const current = useCurrentWeatherStore(state => state.current)
+
     return (
         <TemperatureContainer>
             <TemperatureText>
-                11&deg;C
+                {Math.round(Number(current?.temp_c))}&deg;C
             </TemperatureText>
             <WindSpeedText>
                 <svg width={"20px"} height={"20px"} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -22,8 +26,40 @@ export default function Temperature() {
                             stroke="#fff" strokeWidth="1.5" strokeLinecap="round"></path>
                     </g>
                 </svg>
-                Northwest 38.9 km/h
+                {WindCompass[current?.wind_dir as WindCompassType]} {current?.wind_mph} mp/h
             </WindSpeedText>
         </TemperatureContainer>
     )
 }
+
+const TemperatureContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+`
+
+const TemperatureText = styled.h1`
+    font-size: 80px;
+    color: #ffffff;
+    font-weight: 600;
+    text-align: center;
+    @media (max-width: 768px) {
+        font-size: 50px;
+    }
+    @media (max-width: 480px) {
+        font-size: 30px;
+    }
+    @media (max-width: 320px) {
+        font-size: 20px;
+    }
+`
+
+const WindSpeedText = styled.span`
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.51);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+`

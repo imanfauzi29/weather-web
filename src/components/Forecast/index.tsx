@@ -1,21 +1,28 @@
 import VerticalDivider from "components/Divider/Vertical.tsx";
-import rain from "assets/icons/rain.svg"
 import styled from "styled-components";
+import {Forecastday} from "services/types/MarineType.ts";
+import {useMemo} from "react";
+import {formatDateTime} from "utils/formatDate.ts";
+import {weatherIcon} from "utils/weatherIcon.ts";
 
-export default function Forecast() {
+export default function Forecast(props: Forecastday) {
+    const {code, text} = props.day.condition
+    const [d] = useMemo(() => formatDateTime(props.date), [props.date])
+
+    console.log(weatherIcon[code], code)
     return (
         <Container>
             <SVGContainer>
-                <img src={rain} alt={"rainy"} width={24} height={24}/>
+                <img src={weatherIcon[code]} alt={text} width={24} height={24}/>
             </SVGContainer>
             <WeatherInfo>
-                <p>Friday, 23 april</p>
-                <p>Heavy Rain</p>
+                <p>{d}</p>
+                <p>{text}</p>
             </WeatherInfo>
             <VerticalDivider height={"50%"}/>
             <WeatherInfoItem>
-                <span>9&deg;</span>
-                <span>19&deg;</span>
+                <span>{Math.round(props.day.mintemp_c)}&deg;</span>
+                <span>{Math.round(props.day.maxtemp_c)}&deg;</span>
             </WeatherInfoItem>
         </Container>
     )
