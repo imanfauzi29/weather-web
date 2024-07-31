@@ -5,9 +5,10 @@ import {useMemo} from "react";
 import {formatDateTime} from "utils/formatDate.ts";
 import {weatherIcon} from "utils/weatherIcon.ts";
 
-export default function Forecast(props: Forecastday) {
-    const {code, text} = props.day.condition
-    const [d] = useMemo(() => formatDateTime(props.date), [props.date])
+export default function Forecast(props: { data: Forecastday }) {
+    const {data} = props
+    const {code, text} = data.day.condition
+    const [d] = useMemo(() => formatDateTime(data.date), [data.date])
 
     console.log(weatherIcon[code], code)
     return (
@@ -21,8 +22,8 @@ export default function Forecast(props: Forecastday) {
             </WeatherInfo>
             <VerticalDivider height={"50%"}/>
             <WeatherInfoItem>
-                <span>{Math.round(props.day.mintemp_c)}&deg;</span>
-                <span>{Math.round(props.day.maxtemp_c)}&deg;</span>
+                <span>{Math.round(data.day.mintemp_c)}&deg;</span>
+                <span>{Math.round(data.day.maxtemp_c)}&deg;</span>
             </WeatherInfoItem>
         </Container>
     )

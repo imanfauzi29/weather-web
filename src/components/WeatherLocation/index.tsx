@@ -9,7 +9,7 @@ import Input from "components/ui/Input";
 import {debounce} from "utils/utils.ts";
 
 export default function WeatherLocation() {
-    const [futures, setFutures] = useState<(Forecastday | null)[]>()
+    const [futures, setFutures] = useState<(Forecastday)[]>()
     const {q, setSearch} = useCurrentWeatherStore(state => state)
 
     useEffect(() => {
@@ -23,7 +23,7 @@ export default function WeatherLocation() {
             const newForecast = forecast.forecastday.map((future, i) => {
                 if (i === 0) return null
                 return future
-            }).filter(v => v)
+            }).filter(v => v) as Forecastday[]
 
             setFutures(newForecast)
         } catch (err) {
@@ -52,7 +52,7 @@ export default function WeatherLocation() {
                     {/*<ButtonTabs/>*/}
                     <ForecastContainer>
                         {
-                            futures && futures.map((future, i) => <Forecast key={i} {...future}/>)
+                            futures && futures.map((future, i) => <Forecast key={i} data={future}/>)
                         }
                     </ForecastContainer>
                 </NextForecastContainer>
